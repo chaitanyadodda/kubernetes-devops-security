@@ -1,9 +1,6 @@
 pipeline {
   agent any
-  
-  DOCKERHUB_CREDENTIALS = credentials("docker-hub")
- 
-  stages {
+    stages {
     stage('Build Artifact - Maven') {
       steps {
         sh "mvn clean package -DskipTests=true"
@@ -24,7 +21,8 @@ pipeline {
     }
      stage('Docker Build and Push') {
       steps {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' {
+          DOCKERHUB_CREDENTIALS = credentials("docker-hub")
+          sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' {
           sh 'printenv'
           sh 'docker build -t kittudodda23/numeric-app:""$GIT_COMMIT"" .'
           sh 'docker push kittudodda23/numeric-app:""$GIT_COMMIT""'
