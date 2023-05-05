@@ -36,5 +36,10 @@ pipeline {
         }
       }
     } 
+    stage('SonarQube - SAST') {
+      steps {
+        sh "mvn sonar:sonar -Dsonar.projectKey=numeric-application -Dsonar.host.url=http://devsecops-k8s.eastus.cloudapp.azure.com:9000 -Dsonar.login=15446940b79fa86cc4400fc252e67dfa97ed5df9"
+      }
+    }  
   }
 }
