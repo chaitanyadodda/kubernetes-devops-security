@@ -1,6 +1,8 @@
 pipeline {
   agent any
-
+  environmnet { 
+  DOCKERHUB_CREDENTIALS = credentials("docker-hub")
+  }  
   stages {
     stage('Build Artifact - Maven') {
       steps {
@@ -22,7 +24,7 @@ pipeline {
     }
      stage('Docker Build and Push') {
       steps {
-        withDockerRegistry([credentialsId: "docker-hub", url: ""]) {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' {
           sh 'printenv'
           sh 'docker build -t kittudodda23/numeric-app:""$GIT_COMMIT"" .'
           sh 'docker push kittudodda23/numeric-app:""$GIT_COMMIT""'
