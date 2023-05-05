@@ -19,7 +19,18 @@ pipeline {
         }
       }
     }
-     stage('Docker Build and Push') {
+     stage('SonarQube - SAST') {
+      steps {
+        sh "mvn sonar:sonar -Dsonar.projectKey=numeric-application -Dsonar.host.url=http://devsecops-k8s.eastus.cloudapp.azure.com:9000 -Dsonar.login=15446940b79fa86cc4400fc252e67dfa97ed5df9"
+      }
+        timeout(time: 2, unit: 'MINUTES') {
+          script {
+            waitForQualityGate abortPipeline: true
+          }
+        }
+      }
+      
+      stage('Docker Build and Push') {
       steps {
           withDockerRegistry([credentialsId: "docker-hub", url: ""]) {
           sh 'printenv'
@@ -36,10 +47,5 @@ pipeline {
         }
       }
     } 
-    stage('SonarQube - SAST') {
-      steps {
-        sh "mvn sonar:sonar -Dsonar.projectKey=numeric-application -Dsonar.host.url=http://devsecops-k8s.eastus.cloudapp.azure.com:9000 -Dsonar.login=15446940b79fa86cc4400fc252e67dfa97ed5df9"
-      }
-    }  
-  }
+    }
 }
